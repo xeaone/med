@@ -1,4 +1,5 @@
 npx esbuild server/server.ts \
+    --watch \
     --bundle \
     --minify \
     --format=esm \
@@ -7,16 +8,3 @@ npx esbuild server/server.ts \
     --sourcemap=inline \
     --outfile=bundle/server.mjs \
     --banner:js="import { createRequire } from 'module'; const require = createRequire(import.meta.url);"
-
-npx esbuild client/client.tsx \
-    --bundle \
-    --minify \
-    --format=esm \
-    --platform=browser \
-    --target=es2022 \
-    --sourcemap=inline \
-    --outfile=bundle/client.js
-
-cd deploy
-cdk synth --no-staging
-cd ..
