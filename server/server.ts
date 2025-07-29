@@ -1,6 +1,10 @@
-import { APIGatewayProxyResultV2, APIGatewayProxyEventV2, Handler } from 'aws-lambda';
+import { APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
 import path from 'path';
 import fs from 'fs';
+import { getPatients } from './patients';
+import { getMedications } from './medications';
+import { getPatient } from './patient';
+import { log } from 'console';
 
 const rootPage = async () => {
     return {
@@ -19,7 +23,6 @@ const rootPage = async () => {
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
             </head>
             <body>
-                <!-- <main class="container"></main> -->
                 <div class="container"></div>
             </body>
         </html>
@@ -47,41 +50,55 @@ const clientCss = async () => {
     }
 };
 
-export const handler: Handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     try {
 
         const method = event.requestContext.http.method;
         const pathname = event.requestContext.http.path?.replace(/\/(Stage|Pro)\/?/, '/');
 
+        // const url = new URL(`http://${event.requestContext.domainName}${event.requestContext.http.path?.replace(/\/(Stage|Pro)\/?/, '/')}`);
+        // console.log(url.pathname);
+
         // console.log(event);
 
-        // let body;
-        // try {
-        //     body = JSON.parse(event.body || '{}');
-        // } catch {
-        //     return { statusCode: 400, body: JSON.stringify({ message: 'body not valid' }) };
-        // }
-
-        // if (method === 'GET' && pathname === '/') {
-        //     return rootPage();
-        // }
-
-        if (method === 'GET' && pathname === '/client.js') {
-            return clientJs();
+        let body: Record<any, any> | Array<any> | null;
+        try {
+            body = event.body ? JSON.parse(event.body) : null;
+        } catch {
+            return { statusCode: 400, body: JSON.stringify({ message: 'body not valid' }) };
         }
 
-        if (method === 'GET' && pathname === '/client.css') {
-            return clientCss();
-        }
+        if (method === 'GET' && pathname === '/api/patient') return getPatient();
+        if (method === 'GET' && pathname === '/api/patients') return getPatients();
+        if (method === 'GET' && pathname === '/api/medications') return getMedications();
 
-        if (method === 'GET' && !pathname.includes('.')) {
-            return rootPage();
-        }
+        if (method === 'GET' && pathname === '/client.js') return clientJs();
+        if (method === 'GET' && pathname === '/client.css') return clientCss();
+
+        if (method === 'GET' && pathname === '/') return rootPage();
+        if (method === 'GET' && pathname === '/patient') return rootPage();
+        if (method === 'GET' && pathname === '/patients') return rootPage();
+        if (method === 'GET' && pathname === '/medications') return rootPage();
 
         return { statusCode: 404, body: JSON.stringify({ message: 'Not Found' }) };
 
     } catch (error) {
+        console.error(error);
         return { statusCode: 500, body: JSON.stringify(error) };
     }
 
 };
+
+// import Handler from 'serverless-http';
+// import Express from 'express';
+
+// const app = Express();
+
+// app.get('/api/patients', getPatients);
+
+// app.get('/', rootPage)
+// app.get('/mediations', )
+// app.get('/mediations', )
+
+
+// export const handler = Handler(app);

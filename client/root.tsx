@@ -2,28 +2,30 @@ import React, { useEffect, useState } from 'react';
 
 export default () => {
 
-    const [ medications, setMedications ] = useState([
-        { title: 'med title' }
-    ]);
-
     useEffect(() => {
     }, []);
 
     return <>
         <section>
-            <h1>Medications</h1>
+            <h1>Dashboard</h1>
         </section>
 
-        <section>
-            {medications.map(m => <>
-                <details>
-                    <summary>
-                        <span>{m.title}</span>
-                    </summary>
-                    <p>...</p>
-                </details>
-                <hr />
-            </>)}
+        <section className="grid">
+
+            <article>
+                <a href="/medications" className="contrast">
+                    <span className="material-symbols-outlined">medication</span>
+                    <span>Medications</span>
+                </a>
+            </article>
+
+            <article>
+                <a href="/patients" className="contrast">
+                    <span className="material-symbols-outlined">groups</span>
+                    <span>Patients</span>
+                </a>
+            </article>
+
         </section>
 
     </>;

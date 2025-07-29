@@ -5,6 +5,8 @@ import Root from './root';
 import Patients from './patients';
 
 import './client.css';
+import Medications from './medications';
+import Patient from './patient';
 
 const NotFound = () => <h1>Not Found</h1>;
 
@@ -16,19 +18,19 @@ const page = (<>
     <header>
         <nav>
             <ul>
+                <li>
+                    <a href="/" className="secondary">
+                        <span className="material-symbols-outlined">home</span>
+                    </a>
+                </li>
+            </ul>
+            <ul>
                 <li><strong>Medication Manager</strong></li>
             </ul>
             <ul>
                 <li>
-                    <a href="/" className="contrast">
-                        <span className="material-symbols-outlined">medication</span>
-                        <span>Medications</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/patients" className="contrast">
-                        <span className="material-symbols-outlined">groups</span>
-                        <span>Patients</span>
+                    <a href="#" className="secondary">
+                        <span className="material-symbols-outlined">help</span>
                     </a>
                 </li>
             </ul>
@@ -37,7 +39,9 @@ const page = (<>
     <main>
         {
             path === '/' ? <Root /> :
+            path === '/patient' ? <Patient /> :
             path === '/patients' ? <Patients /> :
+            path === '/medications' ? <Medications /> :
             <NotFound />
         }
     </main>
