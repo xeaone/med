@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../client/patient.tsx"],
+  "sourcesContent": ["import React, { useEffect, useState } from 'react';\nimport { Patient } from '../types';\n\nexport default () => {\n    const [ patient, setPatient ] = useState<Patient>({} as any);\n\n    useEffect(() => {\n        const { id } = Object.fromEntries(new URLSearchParams(location.search));\n\n        fetch(`/api/patient?id=${id}`, { method: 'GET' })\n            .then(r => r.json())\n            .then(d => setPatient(d));\n\n    }, []);\n\n    return (<>\n\n        <section>\n            <h1>Patient</h1>\n        </section>\n\n        <section>\n            <article>\n                <header>{patient?.firstName} {patient?.lastName}</header>\n            </article>\n        </section>\n\n        <section>\n            <article>\n            </article>\n        </section>\n\n    </>);\n};"],
+  "mappings": "+CAAA,IAAAA,EAA2C,SAGpCC,EAAQ,IAAM,CACjB,GAAM,CAAEC,EAASC,CAAW,KAAI,YAAkB,CAAC,CAAQ,EAE3D,sBAAU,IAAM,CACZ,GAAM,CAAE,GAAAC,CAAG,EAAI,OAAO,YAAY,IAAI,gBAAgB,SAAS,MAAM,CAAC,EAEtE,MAAM,mBAAmBA,CAAE,GAAI,CAAE,OAAQ,KAAM,CAAC,EAC3C,KAAKC,GAAKA,EAAE,KAAK,CAAC,EAClB,KAAKC,GAAKH,EAAWG,CAAC,CAAC,CAEhC,EAAG,CAAC,CAAC,EAEG,EAAAC,QAAA,gBAAAA,QAAA,cAEJ,EAAAA,QAAA,cAAC,eACG,EAAAA,QAAA,cAAC,UAAG,SAAO,CACf,EAEA,EAAAA,QAAA,cAAC,eACG,EAAAA,QAAA,cAAC,eACG,EAAAA,QAAA,cAAC,cAAQL,GAAS,UAAU,IAAEA,GAAS,QAAS,CACpD,CACJ,EAEA,EAAAK,QAAA,cAAC,eACG,EAAAA,QAAA,cAAC,cACD,CACJ,CAEJ,CACJ",
+  "names": ["import_react", "patient_default", "patient", "setPatient", "id", "r", "d", "React"]
+}

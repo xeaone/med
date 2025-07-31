@@ -22,16 +22,15 @@
         "server": "sh watch-server.sh"
     },
     "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.858.0",
         "@types/aws-lambda": "^8.10.152",
-        "@types/express": "^5.0.3",
         "@types/node": "^24.1.0",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
         "esbuild": "^0.25.8",
-        "express": "^5.1.0",
+        "mime": "^4.0.7",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
-        "serverless-http": "^3.2.0",
         "typescript": "^5.8.3"
     }
 }

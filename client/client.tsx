@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import Root from './root';
-import Patients from './patients';
+const Root = lazy(() => import('./root'));
+const Patient = lazy(() => import('./patient'));
+const Patients = lazy(() => import('./patients'));
+const Medications = lazy(() => import('./medications'));
 
 import './client.css';
-import Medications from './medications';
-import Patient from './patient';
 
 const NotFound = () => <h1>Not Found</h1>;
 
@@ -37,6 +37,7 @@ const page = (<>
         </nav>
     </header>
     <main>
+        <Suspense>
         {
             path === '/' ? <Root /> :
             path === '/patient' ? <Patient /> :
@@ -44,6 +45,7 @@ const page = (<>
             path === '/medications' ? <Medications /> :
             <NotFound />
         }
+        </Suspense>
     </main>
     <footer></footer>
 </>);

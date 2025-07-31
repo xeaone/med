@@ -2,8 +2,9 @@ npx esbuild client/client.tsx \
     --watch \
     --bundle \
     --minify \
+    --splitting \
+    --sourcemap \
     --format=esm \
-    --platform=browser \
     --target=es2022 \
-    --sourcemap=inline \
-    --outfile=bundle/client.js
+    --outdir=bundle/client \
+    --platform=browser

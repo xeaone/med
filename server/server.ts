@@ -1,10 +1,12 @@
 import { APIGatewayProxyResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
+import mime from 'mime';
+
 import path from 'path';
 import fs from 'fs';
+
 import { getPatients } from './patients';
 import { getMedications } from './medications';
 import { getPatient } from './patient';
-import { log } from 'console';
 
 const rootPage = async () => {
     return {
@@ -16,8 +18,8 @@ const rootPage = async () => {
                 <!-- <base href="/Stage/"> -->
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta name="color-scheme" content="light dark" />
-                <script type="module" src="./client.js" defer></script>
-                <link rel="stylesheet" href="./client.css" />
+                <script type="module" src="/client.js" defer></script>
+                <link rel="stylesheet" href="/client.css" />
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css" />
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -30,23 +32,18 @@ const rootPage = async () => {
     };
 };
 
-let clientJsFile: string;
-const clientJs = async () => {
-    try {
-        clientJsFile = clientJsFile ?? await fs.promises.readFile(path.resolve('./client.js'), { encoding: 'utf8' });
-        return { statusCode: 200, headers: { 'content-type': 'text/javascript' }, body: clientJsFile };
-    } catch (error) {
-        return { statusCode: 500, body: JSON.stringify(error) };
-    }
-};
+const fileHandle = async (basename: string, pathname: string) => {
+    // note probably need to make path safe
+    const filePath = path.join(import.meta.dirname, path.normalize(basename), path.normalize(pathname));
+    const type = mime.getType(filePath) ?? 'text/html';
 
-let clientCssFile: string;
-const clientCss = async () => {
     try {
-        clientCssFile = clientCssFile ?? await fs.promises.readFile(path.resolve('./client.css'), { encoding: 'utf8' });
-        return { statusCode: 200, headers: { 'content-type': 'text/css' }, body: clientCssFile };
+        // probably cache the file after read
+        const body = await fs.promises.readFile(filePath, { encoding: 'utf8' });
+        return { statusCode: 200, headers: { 'content-type': type }, body };
     } catch (error) {
-        return { statusCode: 500, body: JSON.stringify(error) };
+        console.error(error);
+        return { statusCode: 404, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ message: 'Not Found' }) };
     }
 };
 
@@ -58,7 +55,6 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
 
         // const url = new URL(`http://${event.requestContext.domainName}${event.requestContext.http.path?.replace(/\/(Stage|Pro)\/?/, '/')}`);
         // console.log(url.pathname);
-
         // console.log(event);
 
         let body: Record<any, any> | Array<any> | null;
@@ -72,13 +68,12 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
         if (method === 'GET' && pathname === '/api/patients') return getPatients();
         if (method === 'GET' && pathname === '/api/medications') return getMedications();
 
-        if (method === 'GET' && pathname === '/client.js') return clientJs();
-        if (method === 'GET' && pathname === '/client.css') return clientCss();
-
         if (method === 'GET' && pathname === '/') return rootPage();
         if (method === 'GET' && pathname === '/patient') return rootPage();
         if (method === 'GET' && pathname === '/patients') return rootPage();
         if (method === 'GET' && pathname === '/medications') return rootPage();
+
+        if (method === 'GET' && pathname.includes('.')) return fileHandle('../client', pathname);
 
         return { statusCode: 404, body: JSON.stringify({ message: 'Not Found' }) };
 

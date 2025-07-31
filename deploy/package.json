@@ -4,7 +4,8 @@
     "version": "1.0.0",
     "scripts": {
         "build": "tsc",
-        "cdk": "cdk"
+        "deploy": "cdk synth && cdk deploy",
+        "bootstrap": "cdk synth && cdk bootstrap"
     },
     "devDependencies": {
         "@types/node": "22.7.9",

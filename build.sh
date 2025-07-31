@@ -1,21 +1,21 @@
 npx esbuild server/server.ts \
     --bundle \
-    --minify \
+    --sourcemap \
     --format=esm \
     --platform=node \
     --target=es2020 \
-    --sourcemap=inline \
-    --outfile=bundle/server.mjs \
+    --outfile=bundle/server/server.mjs \
     --banner:js="import { createRequire } from 'module'; const require = createRequire(import.meta.url);"
 
 npx esbuild client/client.tsx \
     --bundle \
     --minify \
+    --splitting \
+    --sourcemap \
     --format=esm \
-    --platform=browser \
     --target=es2022 \
-    --sourcemap=inline \
-    --outfile=bundle/client.js
+    --outdir=bundle/client \
+    --platform=browser
 
 cd deploy
 cdk synth --no-staging

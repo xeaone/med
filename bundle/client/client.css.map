@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../client/client.css"],
+  "sourcesContent": [":root {\n    font-size: 18px;\n}\n\n.material-symbols-outlined {\n    margin: 0.25rem;\n    vertical-align: middle;\n    font-size: 1.5rem !important;\n}"],
+  "mappings": "AAAA,MACI,UAAW,IACf,CAEA,CAAC,0BAJD,OAKY,OACR,eAAgB,OAChB,UAAW,gBACf",
+  "names": []
+}
