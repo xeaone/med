@@ -1,6 +1,6 @@
 # sh build.sh
 
-# sudo service docker start
+sudo service docker start
 
 sam local start-api \
 --port 8000 \

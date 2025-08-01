@@ -4,26 +4,31 @@ import { Medication, Patient } from '../types';
 export default () => {
     const { id } = Object.fromEntries(new URLSearchParams(location.search));
 
-    const [ patient, setPatient ] = useState<Patient>({} as any);
+    const [ patient, setPatient ] = useState<Patient>({ id, firstName: '', lastName: '', });
     const [ medications, setMedications ] = useState<Array<Medication>>([]);
 
-    const save = async (e: FormEvent) => {
-        e.preventDefault();
-        const target = e.target as HTMLFormElement;
-        const data = Object.fromEntries(new FormData(target));
-        console.log(data);
-    };
-
-    const add = async (e: FormEvent) => {
-        e.preventDefault();
-        const target = e.target as HTMLFormElement;
-        const data = Object.fromEntries(new FormData(target));
-        console.log(data);
-        // location.search += `&id=${result.id}`;
-    };
+    const [ modalState, setModalState ] = useState<boolean>(false);
+    const modalOpen = () => setModalState(true);
+    const modalClose = () => setModalState(false);
 
     const remove = () => {
+        modalOpen();
+    };
 
+    const submit = async (e: FormEvent) => {
+        e.preventDefault();
+
+        const result = await fetch(`/api/patient`, {
+            method: 'PUT',
+            body: JSON.stringify(patient),
+        }).then(r => r.json());
+
+        if (!id) location.search += `&id=${result.id}`;
+    };
+
+    const change = (e: FormEvent<HTMLFormElement>) => {
+        const { type, name, value, checked } = e.target as HTMLInputElement;
+        setPatient({ ...patient, [ name ]: type === 'checkbox' ? checked : value });
     };
 
     useEffect(() => {
@@ -46,15 +51,15 @@ export default () => {
                 <i>arrow_back</i>
             </a>
             <h1 className="max">Patient</h1>
-            <button className="border error-border error-text" onClick={remove}>
+            {id && <button className="border error-border error-text" onClick={remove}>
                 <i>delete</i>
                 <span>Remove Patient</span>
-            </button>
+            </button>}
         </div>
 
         <article className="border">
             <h5 className="padding">Details</h5>
-            <form onSubmit={id ? save : add} className="grid">
+            <form onSubmit={submit} onChange={change} className="grid">
                 <div className="field label border s12 m6">
                     <input name="firstName" value={patient.firstName} required/>
                     <label>First Name</label>
@@ -65,8 +70,8 @@ export default () => {
                 </div>
                 <div className="s12 right-align">
                     <button className="border" type="submit">
-                        <i>save</i>
-                        <span>Save</span>
+                        <i>{id ? 'save' : 'add'}</i>
+                        <span>{id ? 'Save' : 'Add'}</span>
                     </button>
                 </div>
             </form>
@@ -90,6 +95,16 @@ export default () => {
                 </>)}
             </ul>
         </article>
+
+        <dialog className="modal" open={modalState}>
+            <div className="grid">
+                <h5 className="s10">Remove Patient</h5>
+                <button className="s2" onClick={modalClose}>
+                    <i>close</i>
+                </button>
+            </div>
+            <p>Removing Patient is not allowed.</p>
+        </dialog>
 
     </>);
 };

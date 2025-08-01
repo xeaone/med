@@ -29039,21 +29039,20 @@ var getPatient = async (payload) => {
 };
 var putPatient = async (payload) => {
   const {
-    firstName,
-    lastName
+    id,
+    lastName,
+    firstName
   } = payload ?? {};
   if (!firstName) return response(400, { message: "Medication First Name Required" });
   if (!lastName) return response(400, { message: "Medication Last Name Required" });
-  const result = await put({
-    TableName: "MedTable",
-    Item: {
-      id: ulid(),
-      type: "patient",
-      firstName,
-      lastName
-    }
-  });
-  return response(200, { message: "Patient Added" });
+  const Item = {
+    id: id || ulid(),
+    type: "patient",
+    firstName,
+    lastName
+  };
+  await put({ TableName: "MedTable", Item });
+  return response(200, Item);
 };
 
 // server/medication.ts
@@ -29079,24 +29078,25 @@ var getMedication = async (payload) => {
 };
 var putMedication = async (payload) => {
   const {
+    id,
     title,
+    active,
     patient,
     description
   } = payload ?? {};
   if (!title) return response(400, { message: "Medication Title Required" });
   if (!patient) return response(400, { message: "Medication Patient Required" });
   if (!description) return response(400, { message: "Medication Description Required" });
+  if (active?.constructor !== Boolean) return response(400, { message: "Medication Active Required" });
   const Item = {
-    id: ulid(),
+    id: id || ulid(),
     type: "medication",
     title,
+    active,
     patient,
     description
   };
-  const result = await put({
-    Item,
-    TableName: "MedTable"
-  });
+  await put({ TableName: "MedTable", Item });
   return response(200, Item);
 };
 
@@ -29160,7 +29160,7 @@ var handler = async (event) => {
     return response(404, { message: "Not Found" });
   } catch (error) {
     console.error(error);
-    return response(500, { message: "Internal Server Error" });
+    return response(500, error);
   }
 };
 export {

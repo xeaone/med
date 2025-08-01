@@ -31,27 +31,28 @@ export const getMedication = async (payload: Payload) => {
 export const putMedication = async (payload: Payload) => {
 
     const {
+        id,
         title,
+        active,
         patient,
         description,
-    } = (payload ?? {} as any);
+    } = (payload as Medication) ?? {};
 
     if (!title) return response(400, { message: 'Medication Title Required' });
     if (!patient) return response(400, { message: 'Medication Patient Required' });
     if (!description) return response(400, { message: 'Medication Description Required' });
+    if (active?.constructor !== Boolean) return response(400, { message: 'Medication Active Required' });
 
     const Item = {
-        id: ulid(),
+        id: id || ulid(),
         type: 'medication',
         title,
+        active,
         patient,
         description,
     };
 
-    const result = await put({
-        Item,
-        TableName: 'MedTable',
-    });
+    await put({ TableName: 'MedTable', Item });
 
     return response(200, Item);
 };

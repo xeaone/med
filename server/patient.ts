@@ -31,22 +31,22 @@ export const getPatient = async (payload: Payload) => {
 export const putPatient = async (payload: Payload) => {
 
     const {
-        firstName,
+        id,
         lastName,
-    } = (payload ?? {} as any);
+        firstName,
+    } = (payload as Patient) ?? {};
 
     if (!firstName) return response(400, { message: 'Medication First Name Required' });
     if (!lastName) return response(400, { message: 'Medication Last Name Required' });
 
-    const result = await put({
-        TableName: 'MedTable',
-        Item: {
-            id: ulid(),
-            type: 'patient',
-            firstName,
-            lastName,
-        }
-    });
+    const Item = {
+        id: id || ulid(),
+        type: 'patient',
+        firstName,
+        lastName,
+    };
 
-    return response(200, { message: 'Patient Added' });
+    await put({ TableName: 'MedTable', Item });
+
+    return response(200, Item);
 };
