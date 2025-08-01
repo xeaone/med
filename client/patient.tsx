@@ -31,6 +31,8 @@ export default () => {
         setPatient({ ...patient, [ name ]: type === 'checkbox' ? checked : value });
     };
 
+    const back = () => history.back();
+
     useEffect(() => {
         const { id } = Object.fromEntries(new URLSearchParams(location.search));
 
@@ -47,9 +49,9 @@ export default () => {
     return (<>
 
         <div className="row">
-            <a href="/patients" className="button border">
+            <button onClick={back} className="border">
                 <i>arrow_back</i>
-            </a>
+            </button>
             <h1 className="max padding">Patient</h1>
             {id && <button className="border error-border error-text" onClick={remove}>
                 <i>delete</i>

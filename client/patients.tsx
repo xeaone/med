@@ -4,6 +4,8 @@ import { Patient } from '../types';
 export default () => {
     const [ patients, setPatients ] = useState<Array<Patient>>([]);
 
+    const back = () => history.back();
+
     useEffect(() => {
 
         fetch('/api/patients', { method: 'GET' })
@@ -15,9 +17,9 @@ export default () => {
     return <>
 
         <div className="row">
-            <a href="/" className="button border">
+            <button onClick={back} className="border">
                 <i>arrow_back</i>
-            </a>
+            </button>
             <h1 className="max padding">Patients</h1>
             <a href="/patient" className="button border">
                 <i>add</i>

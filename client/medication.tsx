@@ -70,7 +70,7 @@ export default () => {
 
     const back = () => {
         if (patient) {
-            location.pathname = `/patient?id=${patient}`;
+            location.href = `/patient?id=${patient}`;
         } else {
             history.back();
         }

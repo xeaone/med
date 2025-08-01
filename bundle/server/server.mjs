@@ -975,11 +975,11 @@ var require_lru_cache = __commonJS({
         Keys = null;
         Values = null;
       }
-      var cache3 = new LRUCache(Keys, Values, capacity);
+      var cache4 = new LRUCache(Keys, Values, capacity);
       forEach(iterable, function(value, key) {
-        cache3.set(key, value);
+        cache4.set(key, value);
       });
-      return cache3;
+      return cache4;
     };
     module.exports = LRUCache;
   }
@@ -16968,12 +16968,12 @@ var require_endpointResolver = __commonJS({
     var util_endpoints_1 = require_dist_cjs23();
     var util_endpoints_2 = require_dist_cjs20();
     var ruleset_1 = require_ruleset();
-    var cache3 = new util_endpoints_2.EndpointCache({
+    var cache4 = new util_endpoints_2.EndpointCache({
       size: 50,
       params: ["Endpoint", "Region", "UseDualStack", "UseFIPS"]
     });
     var defaultEndpointResolver3 = (endpointParams, context = {}) => {
-      return cache3.get(endpointParams, () => (0, util_endpoints_2.resolveEndpoint)(ruleset_1.ruleSet, {
+      return cache4.get(endpointParams, () => (0, util_endpoints_2.resolveEndpoint)(ruleset_1.ruleSet, {
         endpointParams,
         logger: context.logger
       }));
@@ -21201,7 +21201,7 @@ var require_endpointResolver2 = __commonJS({
     var util_endpoints_1 = require_dist_cjs23();
     var util_endpoints_2 = require_dist_cjs20();
     var ruleset_1 = require_ruleset2();
-    var cache3 = new util_endpoints_2.EndpointCache({
+    var cache4 = new util_endpoints_2.EndpointCache({
       size: 50,
       params: [
         "AccountId",
@@ -21215,7 +21215,7 @@ var require_endpointResolver2 = __commonJS({
       ]
     });
     var defaultEndpointResolver3 = (endpointParams, context = {}) => {
-      return cache3.get(endpointParams, () => (0, util_endpoints_2.resolveEndpoint)(ruleset_1.ruleSet, {
+      return cache4.get(endpointParams, () => (0, util_endpoints_2.resolveEndpoint)(ruleset_1.ruleSet, {
         endpointParams,
         logger: context.logger
       }));
@@ -29188,12 +29188,13 @@ var rootPage = async () => {
     )
   };
 };
+var cache3 = {};
 var fileHandle = async (basename, pathname) => {
   const filePath = path.join(import.meta.dirname, path.normalize(basename), path.normalize(pathname));
   const type = src_default.getType(filePath) ?? "text/html";
   try {
-    const body = await fs.promises.readFile(filePath, { encoding: "utf8" });
-    return response(200, body, { "content-type": type });
+    const body = cache3[filePath] ?? await fs.promises.readFile(filePath, { encoding: "utf8" });
+    return response(200, body, { "content-type": type, "cache-control": "public, max-age=5000" });
   } catch (error) {
     console.error(error);
     return response(404, { message: "Not Found" });

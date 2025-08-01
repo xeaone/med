@@ -35,15 +35,16 @@ const rootPage = async () => {
     };
 };
 
+const cache = {};
+
 const fileHandle = async (basename: string, pathname: string) => {
     // note probably need to make path safe
     const filePath = path.join(import.meta.dirname, path.normalize(basename), path.normalize(pathname));
     const type = mime.getType(filePath) ?? 'text/html';
 
     try {
-        // probably cache the file after read
-        const body = await fs.promises.readFile(filePath, { encoding: 'utf8' });
-        return response(200, body, { 'content-type': type });
+        const body = cache[ filePath ] ?? await fs.promises.readFile(filePath, { encoding: 'utf8' });
+        return response(200, body, { 'content-type': type, 'cache-control': 'public, max-age=5000' });
     } catch (error) {
         console.error(error);
         return response(404, { message: 'Not Found' });

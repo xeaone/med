@@ -6,6 +6,8 @@ export default () => {
     const [ daily, setDaily ] = useState<Array<Medication>>([]);
     const [ weekly, setWeekly ] = useState<Array<Medication>>([]);
 
+    const back = () => history.back();
+
     const setup = async () => {
         const medications: Array<Medication> = await fetch('/api/medications', { method: 'GET' })
             .then(r => r.json());
@@ -23,9 +25,9 @@ export default () => {
     return <>
 
         <div className="row">
-            <a href="/" className="button border">
+            <button onClick={back} className="border">
                 <i>arrow_back</i>
-            </a>
+            </button>
             <h1 className="max padding">Medications</h1>
         </div>
 
