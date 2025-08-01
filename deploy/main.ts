@@ -54,3 +54,5 @@ const table = new TableV2(stack, 'MedTable', {
         },
     ],
 });
+
+table.grantReadWriteData(lambda);
