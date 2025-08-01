@@ -9,4 +9,7 @@ export interface Patient {
 export interface Medication {
     id: string,
     title: string,
+    description: string,
 }
+
+export type Payload = Record<any, any> | Array<any> | null;

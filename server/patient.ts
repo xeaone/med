@@ -1,13 +1,52 @@
-import { Patient } from '../types';
+import { Patient, Payload } from '../types';
+import { put, query, response } from './tools';
+import { ulid } from 'ulid';
 
-export const getPatient = () => {
+export const getPatient = async (payload: Payload) => {
 
-    const result: Patient = {
-        id: '0', // should be uuid
-        firstName: 'Alex',
-        lastName: 'Elias',
-        medication: '0', // should be uuid
-    };
+    const id = payload && 'id' in payload ? payload.id : '';
 
-    return { statusCode: 200, body: JSON.stringify(result) };
+    if (!id) return response(400, { message: 'Patient ID Required' });
+
+    const { Items } = await query({
+        Limit: 1,
+        IndexName: 'type-id',
+        TableName: 'MedTable',
+        ExpressionAttributeValues: {
+            ':t': 'patient',
+            ':i': id,
+        },
+        ExpressionAttributeNames: {
+            '#t': 'type',
+            '#i': 'id',
+        },
+        KeyConditionExpression: '#t=:t AND #i=:i',
+    });
+
+    if (!Items?.[ 0 ]) return response(400, { message: 'Patient Not Found' });
+
+    return response(200, Items[ 0 ]);
+};
+
+export const putPatient = async (payload: Payload) => {
+
+    const {
+        firstName,
+        lastName,
+    } = (payload ?? {} as any);
+
+    if (!firstName) return response(400, { message: 'Medication First Name Required' });
+    if (!lastName) return response(400, { message: 'Medication Last Name Required' });
+
+    const result = await put({
+        TableName: 'MedTable',
+        Item: {
+            id: ulid(),
+            type: 'patient',
+            firstName,
+            lastName,
+        }
+    });
+
+    return response(200, { message: 'Patient Added' });
 };

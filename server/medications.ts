@@ -1,14 +1,25 @@
-import { Medication } from '../types';
+import { Medication, Payload } from '../types';
+import { query, response } from './tools';
 
-export const getMedications = () => {
+export const getMedications = async (payload: Payload) => {
 
-    const results: Array<Medication> = [
-        {
-            id: '1',
-            title: 'Ibuprofen'
-        }
-    ];
+    const patient = payload && 'patient' in payload ? payload.patient : '';
 
+    if (!patient) return response(400, { message: 'Medication Patient Required' });
 
-    return { statusCode: 200, body: JSON.stringify(results) };
+    const { Items } = await query({
+        IndexName: 'type-patient',
+        TableName: 'MedTable',
+        ExpressionAttributeValues: {
+            ':t': 'medication',
+            ':p': patient,
+        },
+        ExpressionAttributeNames: {
+            '#t': 'type',
+            '#p': 'patient',
+        },
+        KeyConditionExpression: '#t=:t AND #p=:p',
+    });
+
+    return response(200, Items ?? []);
 };

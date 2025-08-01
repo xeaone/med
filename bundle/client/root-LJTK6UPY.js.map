@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../client/root.tsx"],
-  "sourcesContent": ["import React, { useEffect, useState } from 'react';\n\nexport default () => {\n\n    useEffect(() => {\n    }, []);\n\n    return <>\n        <section>\n            <h1>Dashboard</h1>\n        </section>\n\n        <section className=\"grid\">\n\n            <article>\n                <a href=\"/medications\" className=\"contrast\">\n                    <span className=\"material-symbols-outlined\">medication</span>\n                    <span>Medications</span>\n                </a>\n            </article>\n\n            <article>\n                <a href=\"/patients\" className=\"contrast\">\n                    <span className=\"material-symbols-outlined\">groups</span>\n                    <span>Patients</span>\n                </a>\n            </article>\n\n        </section>\n\n    </>;\n};"],
-  "mappings": "+CAAA,IAAAA,EAA2C,SAEpCC,EAAQ,QAEX,aAAU,IAAM,CAChB,EAAG,CAAC,CAAC,EAEE,EAAAC,QAAA,gBAAAA,QAAA,cACH,EAAAA,QAAA,cAAC,eACG,EAAAA,QAAA,cAAC,UAAG,WAAS,CACjB,EAEA,EAAAA,QAAA,cAAC,WAAQ,UAAU,QAEf,EAAAA,QAAA,cAAC,eACG,EAAAA,QAAA,cAAC,KAAE,KAAK,eAAe,UAAU,YAC7B,EAAAA,QAAA,cAAC,QAAK,UAAU,6BAA4B,YAAU,EACtD,EAAAA,QAAA,cAAC,YAAK,aAAW,CACrB,CACJ,EAEA,EAAAA,QAAA,cAAC,eACG,EAAAA,QAAA,cAAC,KAAE,KAAK,YAAY,UAAU,YAC1B,EAAAA,QAAA,cAAC,QAAK,UAAU,6BAA4B,QAAM,EAClD,EAAAA,QAAA,cAAC,YAAK,UAAQ,CAClB,CACJ,CAEJ,CAEJ",
-  "names": ["import_react", "root_default", "React"]
-}

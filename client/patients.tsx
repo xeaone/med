@@ -1,33 +1,82 @@
-import React, { useEffect, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { Patient } from '../types';
 
 export default () => {
     const [ patients, setPatients ] = useState<Array<Patient>>([]);
+    const [ isAddPatient, setIsAddPatient ] = useState<boolean>(false);
 
-    useEffect(() => {
-        fetch('/api/patients', { method: 'GET' })
+    const openAddPatient = () => setIsAddPatient(true);
+    const closeAddPatient = () => setIsAddPatient(false);
+
+    const load = async () => {
+        await fetch('/api/patients', { method: 'GET' })
             .then(r => r.json())
             .then(d => setPatients(d));
+
+    };
+
+    const submit = async (e: FormEvent) => {
+        e.preventDefault();
+        setIsAddPatient(false);
+        const target = e.target as HTMLFormElement;
+        const data = Object.fromEntries(new FormData(target));
+
+        const result = await fetch('/api/patient', { method: 'PUT', body: JSON.stringify(data) });
+
+        console.log(result);
+        await load();
+    };
+
+    useEffect(() => {
+        load();
     }, []);
 
     return <>
 
-        <section>
-            <h1>Patients</h1>
-        </section>
+        <div className="row">
+            <h1 className="max">Patients</h1>
+            <button onClick={openAddPatient}>
+                <i>add</i>
+                <span>Add Patient</span>
+            </button>
+        </div>
 
-        <section>
-            <ul>
+        <article className="border">
+            <ul className="list large-space border">
                 {patients.map(patient => <>
-                    <li className="grid">
-                        <span className="material-symbols-outlined">account_circle</span>
-                        <a role="button" className="outline" href={`/patient?id=${patient.id}`}>
-                            {patient.firstName} {patient.lastName}
-                        </a>
+                    <li>
+                        <i>account_circle</i>
+                        <div className="max">{patient.firstName} {patient.lastName}</div>
+                        <a className="button" href={`/patient?id=${patient.id}`}>View</a>
                     </li>
                 </>)}
             </ul>
-        </section>
+        </article>
+
+        <dialog className="modal" open={isAddPatient}>
+            <div className="grid">
+                <h5 className="s10">Add Patient</h5>
+                <button className="s2" onClick={closeAddPatient}>
+                    <i>close</i>
+                </button>
+            </div>
+            <form onSubmit={submit} className="grid">
+                <div className="field label border s12 m6">
+                    <input name="firstName" required />
+                    <label>First Name</label>
+                </div>
+                <div className="field label border s12 m6">
+                    <input name="lastName" required />
+                    <label>Last Name</label>
+                </div>
+                <div className="s12 right-align">
+                    <button type="submit">
+                        <i>save</i>
+                        <span>Add</span>
+                    </button>
+                </div>
+            </form>
+        </dialog>
 
     </>;
 };

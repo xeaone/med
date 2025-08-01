@@ -5,6 +5,8 @@ npx esbuild client/client.tsx \
     --splitting \
     --sourcemap \
     --format=esm \
+    --loader:.svg=dataurl \
+    --loader:.woff2=dataurl \
     --target=es2022 \
     --outdir=bundle/client \
     --platform=browser

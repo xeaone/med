@@ -6,26 +6,28 @@ import fs from 'fs';
 
 import { getPatients } from './patients';
 import { getMedications } from './medications';
-import { getPatient } from './patient';
+import { getPatient, putPatient } from './patient';
+
+import { Payload } from '../types';
+import { response } from './tools';
+import { getMedication, putMedication } from './medication';
 
 const rootPage = async () => {
     return {
         statusCode: 200,
-        headers: { 'content-type': 'text/html' },
+        headers: {
+            'content-type': 'text/html',
+            'cache-control': 'public, max-age=5000',
+        },
         body: /*html*/`
         <html lang="en">
             <head>
-                <!-- <base href="/Stage/"> -->
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta name="color-scheme" content="light dark" />
-                <script type="module" src="/client.js" defer></script>
                 <link rel="stylesheet" href="/client.css" />
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css" />
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+                <script type="module" src="/client.js" defer></script>
             </head>
             <body>
-                <div class="container"></div>
             </body>
         </html>
         `,
@@ -40,60 +42,48 @@ const fileHandle = async (basename: string, pathname: string) => {
     try {
         // probably cache the file after read
         const body = await fs.promises.readFile(filePath, { encoding: 'utf8' });
-        return { statusCode: 200, headers: { 'content-type': type }, body };
+        return response(200, body, { 'content-type': type });
     } catch (error) {
         console.error(error);
-        return { statusCode: 404, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ message: 'Not Found' }) };
+        return response(404, { message: 'Not Found' });
     }
 };
 
 export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
     try {
+        // console.log('event', event);
 
         const method = event.requestContext.http.method;
-        const pathname = event.requestContext.http.path?.replace(/\/(Stage|Pro)\/?/, '/');
+        const pathname = event.requestContext.http.path;
+        const params = event.queryStringParameters;
 
-        // const url = new URL(`http://${event.requestContext.domainName}${event.requestContext.http.path?.replace(/\/(Stage|Pro)\/?/, '/')}`);
-        // console.log(url.pathname);
-        // console.log(event);
-
-        let body: Record<any, any> | Array<any> | null;
+        let body: Payload = null;
         try {
             body = event.body ? JSON.parse(event.body) : null;
         } catch {
-            return { statusCode: 400, body: JSON.stringify({ message: 'body not valid' }) };
+            return response(400, { message: 'Body Not Valid' });
         }
 
-        if (method === 'GET' && pathname === '/api/patient') return getPatient();
-        if (method === 'GET' && pathname === '/api/patients') return getPatients();
-        if (method === 'GET' && pathname === '/api/medications') return getMedications();
+        const payload: Payload = method === 'GET' ? params ?? null : body;
 
-        if (method === 'GET' && pathname === '/') return rootPage();
-        if (method === 'GET' && pathname === '/patient') return rootPage();
-        if (method === 'GET' && pathname === '/patients') return rootPage();
-        if (method === 'GET' && pathname === '/medications') return rootPage();
+        if (method === 'PUT' && pathname === '/api/medication') return putMedication(payload);
+        if (method === 'GET' && pathname === '/api/medication') return getMedication(payload);
+        if (method === 'GET' && pathname === '/api/medications') return getMedications(payload);
+
+        if (method === 'PUT' && pathname === '/api/patient') return putPatient(payload);
+        if (method === 'GET' && pathname === '/api/patient') return getPatient(payload);
+        if (method === 'GET' && pathname === '/api/patients') return getPatients();
+
+        if (pathname.startsWith('/api/')) return response(404, { message: 'Not Found' });
 
         if (method === 'GET' && pathname.includes('.')) return fileHandle('../client', pathname);
+        if (method === 'GET' && !pathname.includes('.')) return rootPage();
 
-        return { statusCode: 404, body: JSON.stringify({ message: 'Not Found' }) };
+        return response(404, { message: 'Not Found' });
 
     } catch (error) {
         console.error(error);
-        return { statusCode: 500, body: JSON.stringify(error) };
+        return response(500, { message: 'Internal Server Error' });
     }
 
 };
-
-// import Handler from 'serverless-http';
-// import Express from 'express';
-
-// const app = Express();
-
-// app.get('/api/patients', getPatients);
-
-// app.get('/', rootPage)
-// app.get('/mediations', )
-// app.get('/mediations', )
-
-
-// export const handler = Handler(app);

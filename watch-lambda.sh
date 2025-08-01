@@ -1,5 +1,9 @@
-sh build.sh
+# sh build.sh
 
-sudo service docker start
+# sudo service docker start
 
-sam local start-api -t ./deploy/cdk.out/Default.template.json
+sam local start-api \
+--port 8000 \
+--host 0.0.0.0 \
+--warm-containers EAGER \
+--template ./deploy/cdk.out/Default.template.json
