@@ -32,11 +32,18 @@ export const putMedication = async (payload: Payload) => {
 
     const {
         id,
+        time,
         title,
+        dosage,
         active,
         patient,
+        recurrence,
         description,
     } = (payload as Medication) ?? {};
+
+    if (!time) return response(400, { message: 'Medication Time Required' });
+    if (!dosage) return response(400, { message: 'Medication dosage Required' });
+    if (!recurrence) return response(400, { message: 'Medication Frequency Required' });
 
     if (!title) return response(400, { message: 'Medication Title Required' });
     if (!patient) return response(400, { message: 'Medication Patient Required' });
@@ -46,9 +53,12 @@ export const putMedication = async (payload: Payload) => {
     const Item = {
         id: id || ulid(),
         type: 'medication',
+        time,
         title,
+        dosage,
         active,
         patient,
+        recurrence,
         description,
     };
 

@@ -1,25 +1,44 @@
-import { Medication, Payload } from '../types';
+import { Payload } from '../types';
 import { query, response } from './tools';
 
-export const getMedications = async (payload: Payload) => {
+export const getMedications = async (payload: Payload = {}) => {
 
-    const patient = payload && 'patient' in payload ? payload.patient : '';
+    const patient: string = payload && 'patient' in payload ? payload.patient ?? '' : '';
 
-    if (!patient) return response(400, { message: 'Medication Patient Required' });
+    if (patient) {
+        const { Items } = await query({
+            TableName: 'MedTable',
+            IndexName: 'type-patient',
+            ExpressionAttributeValues: {
+                ':t': 'medication',
+                ':p': patient,
+            },
+            ExpressionAttributeNames: {
+                '#t': 'type',
+                '#p': 'patient',
+            },
+            KeyConditionExpression: '#t=:t AND #p=:p',
+        });
 
-    const { Items } = await query({
-        IndexName: 'type-patient',
-        TableName: 'MedTable',
-        ExpressionAttributeValues: {
-            ':t': 'medication',
-            ':p': patient,
-        },
-        ExpressionAttributeNames: {
-            '#t': 'type',
-            '#p': 'patient',
-        },
-        KeyConditionExpression: '#t=:t AND #p=:p',
-    });
+        return response(200, Items ?? []);
+    } else {
+        const { Items } = await query({
+            TableName: 'MedTable',
+            IndexName: 'type-id',
+            ExpressionAttributeValues: {
+                ':t': 'medication',
+                ':a': true,
+            },
+            ExpressionAttributeNames: {
+                '#t': 'type',
+                '#a': 'active',
+            },
+            KeyConditionExpression: '#t=:t',
+            FilterExpression: '#a=:a',
+            
+        });
 
-    return response(200, Items ?? []);
+        return response(200, Items ?? []);
+    }
+
 };

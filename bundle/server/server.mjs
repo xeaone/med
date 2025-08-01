@@ -13397,10 +13397,10 @@ var require_dist_cjs33 = __commonJS({
 });
 
 // node_modules/uuid/dist/esm-node/rng.js
-import crypto from "crypto";
+import crypto2 from "crypto";
 function rng() {
   if (poolPtr > rnds8Pool.length - 16) {
-    crypto.randomFillSync(rnds8Pool);
+    crypto2.randomFillSync(rnds8Pool);
     poolPtr = 0;
   }
   return rnds8Pool.slice(poolPtr, poolPtr += 16);
@@ -13604,14 +13604,14 @@ var init_v35 = __esm({
 });
 
 // node_modules/uuid/dist/esm-node/md5.js
-import crypto2 from "crypto";
+import crypto3 from "crypto";
 function md5(bytes) {
   if (Array.isArray(bytes)) {
     bytes = Buffer.from(bytes);
   } else if (typeof bytes === "string") {
     bytes = Buffer.from(bytes, "utf8");
   }
-  return crypto2.createHash("md5").update(bytes).digest();
+  return crypto3.createHash("md5").update(bytes).digest();
 }
 var md5_default;
 var init_md5 = __esm({
@@ -13632,12 +13632,12 @@ var init_v3 = __esm({
 });
 
 // node_modules/uuid/dist/esm-node/native.js
-import crypto3 from "crypto";
+import crypto4 from "crypto";
 var native_default;
 var init_native = __esm({
   "node_modules/uuid/dist/esm-node/native.js"() {
     native_default = {
-      randomUUID: crypto3.randomUUID
+      randomUUID: crypto4.randomUUID
     };
   }
 });
@@ -13671,14 +13671,14 @@ var init_v4 = __esm({
 });
 
 // node_modules/uuid/dist/esm-node/sha1.js
-import crypto4 from "crypto";
+import crypto5 from "crypto";
 function sha1(bytes) {
   if (Array.isArray(bytes)) {
     bytes = Buffer.from(bytes);
   } else if (typeof bytes === "string") {
     bytes = Buffer.from(bytes, "utf8");
   }
-  return crypto4.createHash("sha1").update(bytes).digest();
+  return crypto5.createHash("sha1").update(bytes).digest();
 }
 var sha1_default;
 var init_sha1 = __esm({
@@ -28870,59 +28870,8 @@ var src_default = new Mime_default(standard_default, other_default)._freeze();
 import path from "path";
 import fs from "fs";
 
-// server/tools.ts
-var import_client_dynamodb = __toESM(require_dist_cjs56(), 1);
-var import_lib_dynamodb = __toESM(require_dist_cjs58(), 1);
-var dynamo = import_lib_dynamodb.DynamoDBDocumentClient.from(new import_client_dynamodb.DynamoDBClient());
-var query = (options) => dynamo.send(new import_lib_dynamodb.QueryCommand(options));
-var put = (options) => dynamo.send(new import_lib_dynamodb.PutCommand(options));
-var response = (statusCode, body, headers) => {
-  headers = headers ?? {};
-  if (!headers["content-type"] && body.constructor === Array || body.constructor === Object) {
-    headers["content-type"] = "application/json";
-  }
-  body = body.constructor === Array ? JSON.stringify(body) : body.constructor === Object ? JSON.stringify(body) : body;
-  return { statusCode, body, headers };
-};
-
-// server/patients.ts
-var getPatients = async () => {
-  const { Items } = await query({
-    IndexName: "type-id",
-    TableName: "MedTable",
-    ExpressionAttributeValues: {
-      ":t": "patient"
-    },
-    ExpressionAttributeNames: {
-      "#t": "type"
-    },
-    KeyConditionExpression: "#t=:t"
-  });
-  return response(200, Items);
-};
-
-// server/medications.ts
-var getMedications = async (payload) => {
-  const patient = payload && "patient" in payload ? payload.patient : "";
-  if (!patient) return response(400, { message: "Medication Patient Required" });
-  const { Items } = await query({
-    IndexName: "type-patient",
-    TableName: "MedTable",
-    ExpressionAttributeValues: {
-      ":t": "medication",
-      ":p": patient
-    },
-    ExpressionAttributeNames: {
-      "#t": "type",
-      "#p": "patient"
-    },
-    KeyConditionExpression: "#t=:t AND #p=:p"
-  });
-  return response(200, Items ?? []);
-};
-
 // node_modules/ulid/dist/node/index.js
-import crypto5 from "node:crypto";
+import crypto from "node:crypto";
 var ENCODING = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 var ENCODING_LEN = 32;
 var RANDOM_LEN = 16;
@@ -28954,7 +28903,7 @@ function randomChar(prng) {
 }
 function detectPRNG(root) {
   const rootLookup = detectRoot();
-  const globalCrypto = rootLookup && (rootLookup.crypto || rootLookup.msCrypto) || (typeof crypto5 !== "undefined" ? crypto5 : null);
+  const globalCrypto = rootLookup && (rootLookup.crypto || rootLookup.msCrypto) || (typeof crypto !== "undefined" ? crypto : null);
   if (typeof globalCrypto?.getRandomValues === "function") {
     return () => {
       const buffer = new Uint8Array(1);
@@ -28963,8 +28912,8 @@ function detectPRNG(root) {
     };
   } else if (typeof globalCrypto?.randomBytes === "function") {
     return () => globalCrypto.randomBytes(1).readUInt8() / 255;
-  } else if (crypto5?.randomBytes) {
-    return () => crypto5.randomBytes(1).readUInt8() / 255;
+  } else if (crypto?.randomBytes) {
+    return () => crypto.randomBytes(1).readUInt8() / 255;
   }
   throw new ULIDError(ULIDErrorCode.PRNGDetectFailure, "Failed to find a reliable PRNG");
 }
@@ -29015,6 +28964,111 @@ function ulid(seedTime, prng) {
   const seed = !seedTime || isNaN(seedTime) ? Date.now() : seedTime;
   return encodeTime(seed, TIME_LEN) + encodeRandom(RANDOM_LEN, currentPRNG);
 }
+
+// server/tools.ts
+var import_client_dynamodb = __toESM(require_dist_cjs56(), 1);
+var import_lib_dynamodb = __toESM(require_dist_cjs58(), 1);
+var dynamo = import_lib_dynamodb.DynamoDBDocumentClient.from(new import_client_dynamodb.DynamoDBClient());
+var query = (options) => dynamo.send(new import_lib_dynamodb.QueryCommand(options));
+var put = (options) => dynamo.send(new import_lib_dynamodb.PutCommand(options));
+var response = (statusCode, body, headers) => {
+  headers = headers ?? {};
+  if (!headers["content-type"] && body.constructor === Array || body.constructor === Object) {
+    headers["content-type"] = "application/json";
+  }
+  body = body.constructor === Array ? JSON.stringify(body) : body.constructor === Object ? JSON.stringify(body) : body;
+  return { statusCode, body, headers };
+};
+
+// server/log.ts
+var getLogs = async (payload = {}) => {
+  const medication = payload && "medication" in payload ? payload.medication : "";
+  if (!medication) return response(400, { message: "Log Medication Required" });
+  const { Items } = await query({
+    TableName: "MedTable",
+    IndexName: "type-medication",
+    ExpressionAttributeValues: {
+      ":t": "log",
+      ":m": medication
+    },
+    ExpressionAttributeNames: {
+      "#t": "type",
+      "#m": "medication"
+    },
+    KeyConditionExpression: "#t=:t AND #m=:m"
+  });
+  return response(200, Items ?? []);
+};
+var putLog = async (payload) => {
+  const {
+    id,
+    stamp,
+    medication
+  } = payload ?? {};
+  if (!stamp) return response(400, { message: "Log Stamp Required" });
+  if (!medication) return response(400, { message: "Log Medication Required" });
+  const Item = {
+    id: id || ulid(),
+    type: "log",
+    stamp,
+    medication
+  };
+  await put({ TableName: "MedTable", Item });
+  return response(200, Item);
+};
+
+// server/patients.ts
+var getPatients = async () => {
+  const { Items } = await query({
+    IndexName: "type-id",
+    TableName: "MedTable",
+    ExpressionAttributeValues: {
+      ":t": "patient"
+    },
+    ExpressionAttributeNames: {
+      "#t": "type"
+    },
+    KeyConditionExpression: "#t=:t"
+  });
+  return response(200, Items);
+};
+
+// server/medications.ts
+var getMedications = async (payload = {}) => {
+  const patient = payload && "patient" in payload ? payload.patient ?? "" : "";
+  if (patient) {
+    const { Items } = await query({
+      TableName: "MedTable",
+      IndexName: "type-patient",
+      ExpressionAttributeValues: {
+        ":t": "medication",
+        ":p": patient
+      },
+      ExpressionAttributeNames: {
+        "#t": "type",
+        "#p": "patient"
+      },
+      KeyConditionExpression: "#t=:t AND #p=:p"
+    });
+    return response(200, Items ?? []);
+  } else {
+    const { Items } = await query({
+      TableName: "MedTable",
+      IndexName: "type-id",
+      ExpressionAttributeValues: {
+        ":t": "medication",
+        ":a": true
+      },
+      ExpressionAttributeNames: {
+        "#t": "type",
+        "#a": "active"
+      },
+      KeyConditionExpression: "#t=:t",
+      FilterExpression: "#a=:a"
+    });
+    return response(200, Items ?? []);
+  }
+};
 
 // server/patient.ts
 var getPatient = async (payload) => {
@@ -29079,11 +29133,17 @@ var getMedication = async (payload) => {
 var putMedication = async (payload) => {
   const {
     id,
+    time,
     title,
+    dosage,
     active,
     patient,
+    recurrence,
     description
   } = payload ?? {};
+  if (!time) return response(400, { message: "Medication Time Required" });
+  if (!dosage) return response(400, { message: "Medication dosage Required" });
+  if (!recurrence) return response(400, { message: "Medication Frequency Required" });
   if (!title) return response(400, { message: "Medication Title Required" });
   if (!patient) return response(400, { message: "Medication Patient Required" });
   if (!description) return response(400, { message: "Medication Description Required" });
@@ -29091,9 +29151,12 @@ var putMedication = async (payload) => {
   const Item = {
     id: id || ulid(),
     type: "medication",
+    time,
     title,
+    dosage,
     active,
     patient,
+    recurrence,
     description
   };
   await put({ TableName: "MedTable", Item });
@@ -29154,6 +29217,8 @@ var handler = async (event) => {
     if (method === "PUT" && pathname === "/api/patient") return putPatient(payload);
     if (method === "GET" && pathname === "/api/patient") return getPatient(payload);
     if (method === "GET" && pathname === "/api/patients") return getPatients();
+    if (method === "PUT" && pathname === "/api/log") return putLog(payload);
+    if (method === "GET" && pathname === "/api/logs") return getLogs(payload);
     if (pathname.startsWith("/api/")) return response(404, { message: "Not Found" });
     if (method === "GET" && pathname.includes(".")) return fileHandle("../client", pathname);
     if (method === "GET" && !pathname.includes(".")) return rootPage();

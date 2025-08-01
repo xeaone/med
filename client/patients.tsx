@@ -15,7 +15,10 @@ export default () => {
     return <>
 
         <div className="row">
-            <h1 className="max">Patients</h1>
+            <a href="/" className="button border">
+                <i>arrow_back</i>
+            </a>
+            <h1 className="max padding">Patients</h1>
             <a href="/patient" className="button border">
                 <i>add</i>
                 <span>Add Patient</span>

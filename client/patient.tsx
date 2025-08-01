@@ -47,10 +47,10 @@ export default () => {
     return (<>
 
         <div className="row">
-            <a href="/patients" className="button transparent">
+            <a href="/patients" className="button border">
                 <i>arrow_back</i>
             </a>
-            <h1 className="max">Patient</h1>
+            <h1 className="max padding">Patient</h1>
             {id && <button className="border error-border error-text" onClick={remove}>
                 <i>delete</i>
                 <span>Remove Patient</span>
@@ -78,14 +78,14 @@ export default () => {
         </article>
 
         <article className="border">
-            <div className="row">
+            <div className="row padding">
                 <h5 className="max">Medications</h5>
                 <a className="button border" href={`/medication?patient=${patient.id}`}>
                     <i>add</i>
                     <span>Add Medication</span>
                 </a>
             </div>
-            <ul className="list">
+            <ul className="list large-space border">
                 {medications.map(medication => <>
                     <li>
                         <i>medication</i>

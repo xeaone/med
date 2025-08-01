@@ -4,13 +4,14 @@ import mime from 'mime';
 import path from 'path';
 import fs from 'fs';
 
+import { getLogs, putLog } from './log';
 import { getPatients } from './patients';
 import { getMedications } from './medications';
 import { getPatient, putPatient } from './patient';
+import { getMedication, putMedication } from './medication';
 
 import { Payload } from '../types';
 import { response } from './tools';
-import { getMedication, putMedication } from './medication';
 
 const rootPage = async () => {
     return {
@@ -73,6 +74,9 @@ export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGateway
         if (method === 'PUT' && pathname === '/api/patient') return putPatient(payload);
         if (method === 'GET' && pathname === '/api/patient') return getPatient(payload);
         if (method === 'GET' && pathname === '/api/patients') return getPatients();
+
+        if (method === 'PUT' && pathname === '/api/log') return putLog(payload);
+        if (method === 'GET' && pathname === '/api/logs') return getLogs(payload);
 
         if (pathname.startsWith('/api/')) return response(404, { message: 'Not Found' });
 

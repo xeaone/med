@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../client/medications.tsx"],
-  "sourcesContent": ["import React, { useEffect, useState } from 'react';\nimport { Medication } from '../types';\n\nexport default () => {\n\n    const [ medications, setMedications ] = useState<Array<Medication>>([]);\n\n    useEffect(() => {\n        fetch('/api/medications', { method: 'GET' })\n            .then(r => r.json())\n            .then(setMedications);\n    }, []);\n\n    return <>\n        <section>\n            <h1>Medications</h1>\n        </section>\n\n        <section>\n            {medications.map(m => <>\n                <details>\n                    <summary>\n                        <span>{m.title}</span>\n                    </summary>\n                    <p>...</p>\n                </details>\n                <hr />\n            </>)}\n        </section>\n\n    </>;\n};"],
-  "mappings": "+CAAA,IAAAA,EAA2C,SAGpCC,EAAQ,IAAM,CAEjB,GAAM,CAAEC,EAAaC,CAAe,KAAI,YAA4B,CAAC,CAAC,EAEtE,sBAAU,IAAM,CACZ,MAAM,mBAAoB,CAAE,OAAQ,KAAM,CAAC,EACtC,KAAKC,GAAKA,EAAE,KAAK,CAAC,EAClB,KAAKD,CAAc,CAC5B,EAAG,CAAC,CAAC,EAEE,EAAAE,QAAA,gBAAAA,QAAA,cACH,EAAAA,QAAA,cAAC,eACG,EAAAA,QAAA,cAAC,UAAG,aAAW,CACnB,EAEA,EAAAA,QAAA,cAAC,eACIH,EAAY,IAAII,GAAK,EAAAD,QAAA,gBAAAA,QAAA,cAClB,EAAAA,QAAA,cAAC,eACG,EAAAA,QAAA,cAAC,eACG,EAAAA,QAAA,cAAC,YAAMC,EAAE,KAAM,CACnB,EACA,EAAAD,QAAA,cAAC,SAAE,KAAG,CACV,EACA,EAAAA,QAAA,cAAC,SAAG,CACR,CAAG,CACP,CAEJ,CACJ",
-  "names": ["import_react", "medications_default", "medications", "setMedications", "r", "React", "m"]
-}
